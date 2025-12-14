@@ -54,8 +54,7 @@ All are preinstalled on most Linux systems and Termux.
 ### 🔹 Termux (Android)
 
 ```bash
-pkg update && pkg upgrade
-pkg install git curl wget coreutils awk
+pkg update && pkg upgrade -y 
 git clone https://github.com/ABHINAV-321/bit-leaker.git
 cd bit-leaker
 chmod +x bitleaker.sh
@@ -67,8 +66,7 @@ chmod +x bitleaker.sh
 🔹 Linux (Ubuntu / Debian / Kali / Mint)
 
 ```
-sudo apt update && sudo apt upgrade
-sudo apt install git curl wget coreutils awk
+sudo apt update -y
 git clone https://github.com/ABHINAV-321/bit-leaker.git
 cd bit-leaker
 chmod +x bitleaker.sh
@@ -80,6 +78,7 @@ chmod +x bitleaker.sh
 🚀 Usage
 
 ```
+cd bit-leaker
 ./bitleaker.sh
 ```
 
