@@ -13,27 +13,36 @@ UNDERLINE='\033[4m'
 RESET='\033[0m'
 
 if [[ "$1" == "--version" ]]; then
-    echo "${GREEN} Bit Leaker ${YELLOW}v$VERSION ${RESET}"
+    echo -e "${GREEN} Bit Leaker ${YELLOW}v$VERSION ${RESET}"
     exit 0
 fi
 
 if [[ "$1" == "--update" ]]; then
-    echo "${GREEN} [*] Updating Bit Leak... ${RESET}"
+    echo -e "${GREEN}[*] Updating Bit Leak...${RESET}"
 
+    UPDATE_URL="https://raw.githubusercontent.com/ABHINAV-321/bit-leaker/main/bitleaker.sh"
     TMP_FILE=$(mktemp)
-    wget -q -O "$TMP_FILE" https://github.com/ABHINAV-321/bit-leaker.git
 
-    if [[ -s "$TMP_FILE" ]]; then
-        chmod +x "$TMP_FILE"
-        mv "$TMP_FILE" "$0"
-        echo -e  "${GREEN} [✓] Update successful! ${RESET}"
-    else
-        echo -e  "${RED} [X] Update failed ${RESET}"
+    if ! curl -fsSL "$UPDATE_URL" -o "$TMP_FILE"; then
+        echo -e "${RED}[X] Failed to download update${RESET}"
         rm -f "$TMP_FILE"
+        exit 1
     fi
 
+    # Verify it's a bash script (NOT HTML)
+    if ! head -n 1 "$TMP_FILE" | grep -q "bash"; then
+        echo -e "${RED}[X] Update file is invalid (HTML detected)${RESET}"
+        rm -f "$TMP_FILE"
+        exit 1
+    fi
+
+    chmod +x "$TMP_FILE"
+    mv "$TMP_FILE" "$0"
+
+    echo -e "${GREEN}[✓] Update successful! Restart the tool.${RESET}"
     exit 0
 fi
+
 # ------------------ Dependency Check ------------------
 
 REQUIRED_TOOLS=(aria2 wget curl stat  awk)
