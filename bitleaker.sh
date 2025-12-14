@@ -20,7 +20,7 @@ fi
 if [[ "$1" == "--update" ]]; then
     echo -e "${GREEN}[*] Updating Bit Leak...${RESET}"
 
-    UPDATE_URL="https://raw.githubusercontent.com/ABHINAV-321/bit-leaker/main/bitleaker.sh"
+    UPDATE_URL="https://raw.githubusercontent.com/ABHINAV-321/bit-leaker/master/bitleaker.sh"
     TMP_FILE=$(mktemp)
 
     if ! curl -fsSL "$UPDATE_URL" -o "$TMP_FILE"; then
