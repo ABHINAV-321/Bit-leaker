@@ -13,51 +13,54 @@ UNDERLINE='\033[4m'
 RESET='\033[0m'
 
 if [[ "$1" == "--version" ]]; then
-    echo "${GREEN} Bit Leaker ${YELLOW}v$VERSION ${RESET}"
+    echo -e  "${GREEN} Bit Leaker ${YELLOW}v$VERSION ${RESET}"
     exit 0
 fi
 
 if [[ "$1" == "--update" ]]; then
-    echo "${GREEN} [*] Updating Bit Leak... ${RESET}"
+    echo -e "${GREEN}[*] Updating Bit Leak...${RESET}"
 
+    UPDATE_URL="https://raw.githubusercontent.com/ABHINAV-321/bit-leaker/main/bitleaker.sh"
     TMP_FILE=$(mktemp)
-    wget -q -O "$TMP_FILE" https://github.com/ABHINAV-321/bit-leaker.git
 
-    if [[ -s "$TMP_FILE" ]]; then
-        chmod +x "$TMP_FILE"
-        mv "$TMP_FILE" "$0"
-        echo -e  "${GREEN} [✓] Update successful! ${RESET}"
-    else
-        echo -e  "${RED} [X] Update failed ${RESET}"
+    if ! curl -fsSL "$UPDATE_URL" -o "$TMP_FILE"; then
+        echo -e "${RED}[X] Failed to download update${RESET}"
         rm -f "$TMP_FILE"
+        exit 1
     fi
 
+    # Verify it's a bash script (NOT HTML)
+    if ! head -n 1 "$TMP_FILE" | grep -q "bash"; then
+        echo -e "${RED}[X] Update file is invalid (HTML detected)${RESET}"
+        rm -f "$TMP_FILE"
+        exit 1
+    fi
+
+    chmod +x "$TMP_FILE"
+    mv "$TMP_FILE" "$0"
+
+    echo -e "${GREEN}[✓] Update successful! Restart the tool.${RESET}"
     exit 0
 fi
 # ------------------ Dependency Check ------------------
 
-REQUIRED_TOOLS=(aria2 wget curl stat  awk)
+REQUIRED_TOOLS=(wget curl stat  awk)
 
 install_tool() {
-    tool="$1"
+    tool=$1
+    echo -e "\e[1;33m[!] Installing missing dependency: $tool\e[0m"
 
-    # Termux
-    if [ -d "/data/data/com.termux/files" ]; then
-        echo "[*] Installing $tool using pkg"
-        pkg install -y "$tool"
-        return
-    fi
-
-    # Linux (apt-based)
     if command -v apt >/dev/null 2>&1; then
-        echo "[*] Installing $tool using apt"
+        sudo apt update -y >/dev/null 2>&1
         sudo apt install -y "$tool"
-        return
+    elif command -v pkg >/dev/null 2>&1; then
+        pkg install -y "$tool"
+    else
+        echo -e "\e[1;31m[X] Unsupported package manager. Install $tool manually.\e[0m"
+        exit 1
     fi
-
-    echo "[X] Cannot auto-install $tool. Please install manually."
-    exit 1
 }
+
 echo -e "\e[1;36m[*] Checking required tools...\e[0m"
 
 for tool in "${REQUIRED_TOOLS[@]}"; do
@@ -90,37 +93,7 @@ echo
 echo -e "${GREEN}GitHub:${RESET} ${UNDERLINE}https://github.com/ABHINAV-321${RESET}"
 echo
 
-echo
-echo -e "${CYAN}Select download method:${RESET}"
-echo -e "${GREEN}1) aria2 (fast, recommended)${RESET}"
-echo -e "${GREEN}2) curl${RESET}"
-echo -e "${GREEN}3) wget${RESET}"
-echo
-
-while true; do
-    read -rp "Enter choice (1/2/3): " method_choice
-    case "$method_choice" in
-        1)
-            DOWNLOAD_METHOD="aria2"
-            break
-            ;;
-        2)
-            DOWNLOAD_METHOD="curl"
-            break
-            ;;
-        3)
-            DOWNLOAD_METHOD="wget"
-            break
-            ;;
-        *)
-            echo "Invalid choice. Please enter 1, 2, or 3."
-            ;;
-    esac
-done
-
-echo -e "${YELLOW}Using download method: $DOWNLOAD_METHOD${RESET}"
-sleep 1
-
+# Y/N prompt
 while true; do
     read -rp "Do you want to continue? (y/n): " choice
     case "$choice" in
@@ -165,9 +138,6 @@ trap finish_script INT
 finish_script() {
     clear
 
-    rm -f  ./d* ./*.aria2
-    sleep 2
-
     # Count partial download if exists
     if [ -n "$output_file" ] && [ -f "$output_file" ]; then
         partial_size=$(stat -c%s "$output_file" 2>/dev/null || echo 0)
@@ -211,52 +181,27 @@ EOF
 
     exit 0
 }
-#Download 
-download_file() {
+#download 
+ download_file() {
     url="$1"
     out="$2"
 
-    case "$DOWNLOAD_METHOD" in
-        aria2)
-            if command -v aria2c >/dev/null 2>&1; then
-                aria2c \
-                    --quiet=true \
-                    --summary-interval=0 \
-                    --file-allocation=none \
-                    --auto-file-renaming=false \
-                    --remove-control-file=true \
-                    -x 1 -s 1 \
-                    -o "$out" "$url"
-                return $?
-            else
-                echo "[X] aria2 not installed"
-                return 1
-            fi
-            ;;
-        curl)
-            if command -v curl >/dev/null 2>&1; then
-                curl -L -s --fail "$url" -o "$out"
-                return $?
-            else
-                echo "[X] curl not installed"
-                return 1
-            fi
-            ;;
-        wget)
-            if command -v wget >/dev/null 2>&1; then
-                wget -q "$url" -O "$out"
-                return $?
-            else
-                echo "[X] wget not installed"
-                return 1
-            fi
-            ;;
-        *)
-            echo "[X] No download method selected"
-            return 1
-            ;;
-    esac
-}	
+    # Try curl first (silent)
+    if command -v curl >/dev/null 2>&1; then
+        curl -L -s --fail "$url" -o "$out"
+        if [ $? -eq 0 ] && [ -s "$out" ]; then
+            return 0
+        fi
+    fi
+
+    # Fallback to wget (silent)
+    if command -v wget >/dev/null 2>&1; then
+        wget -q "$url" -O "$out"
+        return $?
+    fi
+
+    return 1
+}
 
 show_status() {
     now=$(date +%s)
