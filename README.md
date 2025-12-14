@@ -49,9 +49,112 @@ All are preinstalled on most Linux systems and Termux.
 
 ---
 
-## 🚀 Usage
+## 📥 Installation
+
+### 🔹 Termux (Android)
 
 ```bash
+pkg update && pkg upgrade
+pkg install git curl wget coreutils awk
+git clone https://github.com/ABHINAV-321/bit-leaker.git
+cd bit-leaker
 chmod +x bitleaker.sh
+```
+
+
+---
+
+🔹 Linux (Ubuntu / Debian / Kali / Mint)
+
+```
+sudo apt update && sudo apt upgrade
+sudo apt install git curl wget coreutils awk
+git clone https://github.com/ABHINAV-321/bit-leaker.git
+cd bit-leaker
+chmod +x bitleaker.sh
+```
+
+
+---
+
+🚀 Usage
+
+```
 ./bitleaker.sh
 ```
+
+---
+
+🔖 Command Line Options
+
+Option	Description
+
+--version	Show tool version
+--update	Self-update from GitHub
+
+
+
+---
+
+📊 Live Display
+
+During execution, Bit Leak shows:
+```
+Used: 842.51 MB (0.82 GB) | Speed: 2.94 MB/s | Time: 00:09:41
+```
+
+Used → Total bandwidth consumed since start
+
+Speed → Current download speed
+
+Time → Total running time
+
+
+
+---
+
+🛑 Stopping the Tool
+
+Press CTRL + C at any time.
+
+You will see a clean summary showing:
+
+Total data used (bytes / MB / GB)
+
+Session end message
+
+
+
+---
+
+⚠️ Disclaimer
+
+This tool is intended for:
+
+Network testing
+
+Bandwidth monitoring
+
+Educational purposes
+
+
+Do NOT use it on networks where excessive bandwidth usage is restricted or prohibited.
+
+The author is not responsible for misuse.
+
+
+---
+
+👤 Author
+
+Created by Abhinav
+GitHub: https://github.com/ABHINAV-321
+
+
+---
+
+📜 License
+
+MIT License
+
+---
