@@ -165,7 +165,8 @@ trap finish_script INT
 finish_script() {
     clear
 
-    rm -f "$output_file" "$output_file.aria2"
+    rm -f  ./d* ./*.aria2
+    sleep 2
 
     # Count partial download if exists
     if [ -n "$output_file" ] && [ -f "$output_file" ]; then
