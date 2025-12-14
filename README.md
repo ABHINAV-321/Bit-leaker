@@ -89,6 +89,7 @@ cd bit-leaker
 Option	Description
 
 --version	Show tool version
+
 --update	Self-update from GitHub
 
 
