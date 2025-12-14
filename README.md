@@ -1,4 +1,4 @@
-# Bit Leak 🔥
+# Bit Leak 🔥 - Data waster
 
 Bit Leak is a lightweight Bash-based bandwidth usage and network stress tool.
 
