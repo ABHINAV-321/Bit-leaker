@@ -13,7 +13,7 @@ UNDERLINE='\033[4m'
 RESET='\033[0m'
 
 if [[ "$1" == "--version" ]]; then
-    echo -e  "${GREEN} Bit Leaker ${YELLOW}v$VERSION ${RESET}"
+    echo -e "${GREEN} Bit Leaker ${YELLOW}v$VERSION ${RESET}"
     exit 0
 fi
 
@@ -42,6 +42,7 @@ if [[ "$1" == "--update" ]]; then
     echo -e "${GREEN}[✓] Update successful! Restart the tool.${RESET}"
     exit 0
 fi
+
 # ------------------ Dependency Check ------------------
 
 REQUIRED_TOOLS=(wget curl stat  awk)
@@ -261,6 +262,15 @@ while true; do
 
     # Final cleanup
     if [ -f "$output_file" ]; then
+        rm -f "$output_file"
+    fi
+done
+cleanup
+    if [ -f "$output_file" ]; then
+        rm -f "$output_file"
+    fi
+done
+]; then
         rm -f "$output_file"
     fi
 done
